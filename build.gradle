@@ -10,6 +10,27 @@ repositories {
 	maven {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
+		content { includeGroup "maven.modrinth" }
+	}
+	maven {
+		// ViaVersion / ViaFabricPlus API (not on Maven Central)
+		name = "ViaVersion"
+		url = "https://repo.viaversion.com"
+		content {
+			includeGroup "com.viaversion"
+			includeGroup "net.raphimc"
+		}
+	}
+	mavenCentral()
+}
+
+fabricApi {
+	configureTests {
+		createSourceSet = true
+		modId = "replaymod-viafabric-test"
+		enableGameTests = false
+		enableClientGameTests = true
+		eula = true
 	}
 }
 
@@ -20,6 +41,41 @@ dependencies {
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 	implementation "maven.modrinth:replaymod:${replaymod_version}"
 	implementation "maven.modrinth:viafabricplus:${viafabricplus_version}"
+
+	// ViaFabricPlus ships its API and the Via* libraries as nested jars, which are only visible at runtime.
+	// Compile against the matching published artifacts instead.
+	compileOnly "com.viaversion:viafabricplus-api:${viafabricplus_version}"
+	compileOnly "com.viaversion:viaversion-common:${viaversion_version}"
+	testCompileOnly "com.viaversion:viafabricplus-api:${viafabricplus_version}"
+	testCompileOnly "com.viaversion:viaversion-common:${viaversion_version}"
+	gametestCompileOnly "com.viaversion:viafabricplus-api:${viafabricplus_version}"
+	gametestCompileOnly "com.viaversion:viaversion-common:${viaversion_version}"
+
+	testImplementation platform("org.junit:junit-bom:${junit_version}")
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+	testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
+}
+
+def replayFixtures = providers.gradleProperty("replayFixtures").orElse(file("reference").absolutePath)
+
+test {
+	useJUnitPlatform()
+	systemProperty "replaymod_viafabric.fixtures", replayFixtures.get()
+	systemProperty "replaymod_viafabric.strict", "true"
+	if (providers.gradleProperty("fullReplay").isPresent()) {
+		systemProperty "replaymod_viafabric.fullReplay", "true"
+	}
+	maxHeapSize = "2G"
+	testLogging {
+		events "passed", "skipped", "failed"
+		showStandardStreams = true
+		exceptionFormat = "full"
+	}
+}
+
+tasks.matching { it.name == "runClientGameTest" }.configureEach {
+	jvmArgs "-Dreplaymod_viafabric.fixtures=${replayFixtures.get()}"
 }
 
 processResources {
