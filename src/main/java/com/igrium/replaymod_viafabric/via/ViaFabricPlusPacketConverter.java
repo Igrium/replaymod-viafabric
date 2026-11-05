@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Converts the packets of a replay recorded on an older Minecraft version to the running client's version using
@@ -56,6 +57,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ViaFabricPlusPacketConverter implements AutoCloseable {
     private static final Logger LOGGER = LoggerFactory.getLogger("replaymod-viafabric");
     private static final Set<String> WARNED = ConcurrentHashMap.newKeySet();
+    private static final AtomicInteger DROPPED = new AtomicInteger();
+    private static final AtomicInteger CREATED = new AtomicInteger();
 
     private final ProtocolVersion inputVersion;
     private final ProtocolVersion outputVersion;
@@ -119,7 +122,22 @@ public final class ViaFabricPlusPacketConverter implements AutoCloseable {
         // Same as a live ViaFabricPlus connection (see ViaFabricPlus' MixinConnection_1)
         pipeline.add(ViaFabricPlusProtocol.INSTANCE);
 
+        CREATED.incrementAndGet();
         LOGGER.debug("Created ViaFabricPlus replay converter {} -> {} ({} protocols)", inputVersion, outputVersion, path.size());
+    }
+
+    /**
+     * @return how many replay packets failed to convert and were dropped since startup (for diagnostics and tests)
+     */
+    public static int droppedPacketCount() {
+        return DROPPED.get();
+    }
+
+    /**
+     * @return how many converting (i.e. cross-version) instances were created since startup
+     */
+    public static int createdCount() {
+        return CREATED.get();
     }
 
     /**
@@ -240,6 +258,7 @@ public final class ViaFabricPlusPacketConverter implements AutoCloseable {
             if (CompatConfig.strict()) {
                 throw new IOException("Exception during ViaFabricPlus conversion of " + key + " (" + inputVersion + " -> " + outputVersion + ")", e);
             }
+            DROPPED.incrementAndGet();
             if (WARNED.add(key)) {
                 LOGGER.warn("Dropping replay packet {} which failed to convert from {} to {} (further failures of this packet type are not logged)",
                         key, inputVersion, outputVersion, e);

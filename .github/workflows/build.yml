@@ -21,8 +21,21 @@ jobs:
           distribution: 'microsoft'
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: build
+      - name: build and unit tests
         run: ./gradlew build
+      - name: install headless display
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0
+      - name: client game test (headless)
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -noreset" ./gradlew runClientGameTest
+      - name: capture game test screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: Game test screenshots
+          path: build/run/clientGameTest/screenshots/
+          if-no-files-found: ignore
       - name: capture build artifacts
         uses: actions/upload-artifact@v7
         with:

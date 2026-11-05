@@ -1,0 +1,18 @@
+{
+	"schemaVersion": 1,
+	"id": "replaymod-viafabric-test",
+	"version": "1.0.0",
+	"name": "ReplayMod ViaFabricPlus Compat - client game tests",
+	"environment": "client",
+	"entrypoints": {
+		"fabric-client-gametest": [
+			"com.igrium.replaymod_viafabric.gametest.ReplayPlaybackClientGameTest"
+		]
+	},
+	"depends": {
+		"replaymod-viafabric": "*"
+	},
+	"mixins": [
+		"replaymod-viafabric-test.mixins.json"
+	]
+}

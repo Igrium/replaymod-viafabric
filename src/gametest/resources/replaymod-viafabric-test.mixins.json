@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "com.igrium.replaymod_viafabric.gametest.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"MixinGlBackend"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

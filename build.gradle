@@ -61,7 +61,11 @@ def replayFixtures = providers.gradleProperty("replayFixtures").orElse(file("ref
 
 test {
 	useJUnitPlatform()
+	// Minecraft and ViaFabricPlus write config/logs into the working directory
+	workingDir = layout.buildDirectory.dir("junit-run").get().asFile
+	doFirst { workingDir.mkdirs() }
 	systemProperty "replaymod_viafabric.fixtures", replayFixtures.get()
+	systemProperty "replaymod_viafabric.extraFixtures", file("src/test/resources/replays").absolutePath
 	systemProperty "replaymod_viafabric.strict", "true"
 	if (providers.gradleProperty("fullReplay").isPresent()) {
 		systemProperty "replaymod_viafabric.fullReplay", "true"
@@ -76,6 +80,8 @@ test {
 
 tasks.matching { it.name == "runClientGameTest" }.configureEach {
 	jvmArgs "-Dreplaymod_viafabric.fixtures=${replayFixtures.get()}"
+	// Xvfb has no sRGB-capable GLX visuals; see src/gametest/.../MixinGlBackend
+	jvmArgs "-Dreplaymod_viafabric.gametest.noSrgbFramebuffer=true"
 }
 
 processResources {

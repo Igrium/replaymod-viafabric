@@ -36,7 +36,8 @@ public class ReplayFixtureTest {
 
     static Stream<File> fixtures() throws IOException {
         List<File> files = new ArrayList<>();
-        for (String dir : new String[]{System.getProperty("replaymod_viafabric.fixtures", "reference"), "src/test/resources/replays"}) {
+        for (String dir : new String[]{System.getProperty("replaymod_viafabric.fixtures", "reference"),
+                System.getProperty("replaymod_viafabric.extraFixtures", "src/test/resources/replays")}) {
             Path path = Path.of(dir);
             if (!Files.isDirectory(path)) continue;
             try (Stream<Path> list = Files.list(path)) {
