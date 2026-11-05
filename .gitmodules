@@ -1,0 +1,6 @@
+[submodule "reference/ViaFabricPlus"]
+	path = reference/ViaFabricPlus
+	url = https://github.com/ViaVersion/ViaFabricPlus.git
+[submodule "reference/ReplayMod"]
+	path = reference/ReplayMod
+	url = https://github.com/ReplayMod/ReplayMod.git
