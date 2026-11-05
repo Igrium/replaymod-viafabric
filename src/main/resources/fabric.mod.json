@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "replaymod-viafabric",
+	"version": "${version}",
+	"name": "ReplayMod ViaFabricPlus Compat",
+	"description": "A vibe-coded compatibility mod that makes Replay Mod use ViaFabric Plus for cross-version compatibility",
+	"authors": [
+		"Igrium"
+	],
+	"license": "GPL-3.0",
+	"icon": "assets/replaymod-viafabric/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.igrium.replaymod_viafabric.ReplayModViaFabricPlusCompat"
+		]
+	},
+	"mixins": [
+		"replaymod-viafabric.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*",
+		"replaymod": "*",
+		"viafabricplus": "*"
+	}
+}
