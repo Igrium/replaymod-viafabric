@@ -226,8 +226,15 @@ public final class ViaFabricPlusPacketConverter implements AutoCloseable {
                         // The entity id is the first field of the join game packet in every version. Negate it so
                         // ViaVersion doesn't treat the recording player's entity as "self" (it applies fix-ups for
                         // that, e.g. for 1.8 armor). Matches what ReplayStudio does; its filters expect ~id.
+                        // Some replays already store ~id (older Replay Mod versions, or files written by
+                        // ReplayStudio, e.g. edited replays). Negating those again would restore the real id and
+                        // re-enable the fix-ups, e.g. shifting the 1.8 chestplate onto the head. Real entity ids
+                        // are never negative, so only negate non-negative ids.
                         int idx = buf.readerIndex();
-                        buf.setInt(idx, ~buf.getInt(idx));
+                        int entityId = buf.getInt(idx);
+                        if (entityId >= 0) {
+                            buf.setInt(idx, ~entityId);
+                        }
                     }
                 }
                 default -> {

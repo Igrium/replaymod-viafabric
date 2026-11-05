@@ -133,6 +133,10 @@ protocol id.
      the first int (the entity id, the first field in every version from 1.7 to 26.3) is **bitwise negated**
      *before* Via sees it, so Via doesn't treat the recording player as "self" and skips its self-entity fix-ups
      (e.g. 1.8 armor). This matches ReplayStudio, whose filters expect `~id`.
+     The id is only negated if it is non-negative: some replays already store `~id` (e.g. the Hypixel Bed Wars
+     fixture, recorded with Replay Mod 2.6.7), and negating again would restore the real id. Via's 1.8→1.9
+     `SET_EQUIPPED_ITEM` maps the *self* entity's slots 0-3 to 2-5 and drops slot 4, which put the recording
+     player's chestplate on their head. ReplayStudio's own unconditional `~` has the same bug.
 3. It runs `PacketWrapper.create` and `pipeline.transform(CLIENTBOUND, state, wrapper)`. The output is the packets
    Via emitted on its own (captured by `CapturingUserConnection`) followed by the transformed packet, unless the
    packet was cancelled.
