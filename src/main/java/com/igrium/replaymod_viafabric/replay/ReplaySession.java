@@ -117,6 +117,14 @@ public final class ReplaySession {
     }
 
     /**
+     * @return the target version the user had selected before the open replay changed it, or {@code null} if no
+     * replay is open
+     */
+    public static @Nullable ProtocolVersion userTargetVersion() {
+        return previousTargetVersion;
+    }
+
+    /**
      * @return the user connection bound to the open replay, if any
      */
     public static @Nullable UserConnection boundUserConnection() {

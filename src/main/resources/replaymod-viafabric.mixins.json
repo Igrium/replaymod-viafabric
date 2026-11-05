@@ -10,8 +10,10 @@
 	},
 	"client": [
 		"MixinFullReplaySender",
+		"MixinMinecraft",
 		"MixinReplayHandler",
 		"MixinReplayInputStream",
+		"MixinSettingsImpl",
 		"MixinViaVersionPacketConverter"
 	]
 }
